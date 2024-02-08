@@ -1,53 +1,103 @@
-// #include <Arduino.h>
-/*
- Example using the SparkFun HX711 breakout board with a scale
- By: Nathan Seidle
- SparkFun Electronics
- Date: November 19th, 2014
- License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
-
- This example demonstrates basic scale output. See the calibration sketch to get the calibration_factor for your
- specific load cell setup.
-
- This example code uses bogde's excellent library: https://github.com/bogde/HX711
- bogde's library is released under a GNU GENERAL PUBLIC LICENSE
-
- The HX711 does one thing well: read load cells. The breakout board is compatible with any wheat-stone bridge
- based load cell which should allow a user to measure everything from a few grams to tens of tons.
-
- Arduino pin 2 -> HX711 CLK
- 3 -> DAT
- 5V -> VCC
- GND -> GND
-
- The HX711 board can be powered from 2.7V to 5V so the Arduino 5V power should be fine.
-
-*/
-
 #include <Arduino.h>
 #include "HX711.h"
 
 #define calibration_factor -7050.0 //This value is obtained using the SparkFun_HX711_Calibration sketch
 
-#define DOUT D4
-#define CLK D5
+#define DOUT1 D5
+#define CLK1 D6
+HX711 scale1;
 
-HX711 scale;
+#define DOUT2 D7
+#define CLK2 D8
+HX711 scale2;
 
-void setup() {
+// Define stepper motor connections and steps per revolution:
+#define dirPin D9
+#define stepPin D10
+#define stepsPerRevolution 200
+
+class FlexClass {
+public: 
+void FlexClass() {
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
+
   Serial.begin(9600);
   Serial.println("HX711 scale demo");
 
-  scale.begin(DOUT, CLK);
-  scale.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
-  scale.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
+  scale1.begin(DOUT1, CLK1);
+  scale1.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
+  scale1.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
+
+  scale2.begin(DOUT2, CLK2);
+  scale2.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
+  scale2.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
 
   Serial.println("Readings:");
 }
 
-void loop() {
-  Serial.print("Reading: ");
-  Serial.print(scale.get_units(), 1); //scale.get_units() returns a float
-  Serial.print(" lbs"); //You can change this to kg but you'll need to refactor the calibration_factor
-  Serial.println();
+float read_scale(boolean print) {
+  float reading = scale1.get_units();
+  if (print) {
+    Serial.print("Reading: ");
+    Serial.print(reading, 1); //scale.get_units() returns a float
+    Serial.print(" lbs"); //You can change this to kg but you'll need to refactor the calibration_factor
+    Serial.println();
+  }
+
+  return reading;
 }
+
+};
+
+
+// void change_direction() {
+//   digitalWrite()
+// }
+
+
+void loop() {
+  digitalWrite(stepPin, HIGH);
+  delayMicroseconds(2000);
+  digitalWrite(stepPin, LOW);
+  delayMicroseconds(2000);
+}
+
+
+// void loop() {
+
+//   digitalWrite(LED_BUILTIN, HIGH);
+//   delay(500);
+//   digitalWrite(LED_BUILTIN, LOW);
+//   delay(500);
+  
+//    // Set the spinning direction clockwise: 
+//   digitalWrite(dirPin, HIGH);
+
+//   // Spin the stepper motor 1 revolution slowly:
+//   for (int i = 0; i < stepsPerRevolution; i++) {
+//     // These four lines result in 1 step:
+//     digitalWrite(stepPin, HIGH);
+//     delayMicroseconds(2000);
+//     digitalWrite(stepPin, LOW);
+//     delayMicroseconds(2000);
+//   }
+
+//   delay(1000);
+
+//   // Set the spinning direction counterclockwise:
+//   digitalWrite(dirPin, LOW);
+
+//   // Spin the stepper motor 1 revolution quickly:
+//   for (int i = 0; i < stepsPerRevolution; i++) {
+//     // These four lines result in 1 step:
+//     digitalWrite(stepPin, HIGH);
+//     delayMicroseconds(2000);
+//     digitalWrite(stepPin, LOW);
+//     delayMicroseconds(2000);
+//   }
+
+//   delay(1000);
+// }
+
