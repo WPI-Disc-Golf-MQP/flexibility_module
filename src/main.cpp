@@ -18,13 +18,10 @@ HX711 scale2;
 
 class FlexClass {
 public: 
-void FlexClass() {
+FlexClass() {
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
-
-  Serial.begin(9600);
-  Serial.println("HX711 scale demo");
 
   scale1.begin(DOUT1, CLK1);
   scale1.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
@@ -33,37 +30,44 @@ void FlexClass() {
   scale2.begin(DOUT2, CLK2);
   scale2.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
   scale2.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
-
-  Serial.println("Readings:");
 }
 
-float read_scale(boolean print) {
+float read_scale1() {
   float reading = scale1.get_units();
-  if (print) {
-    Serial.print("Reading: ");
-    Serial.print(reading, 1); //scale.get_units() returns a float
-    Serial.print(" lbs"); //You can change this to kg but you'll need to refactor the calibration_factor
-    Serial.println();
-  }
-
+  return reading;
+}
+float read_scale2() {
+  float reading = scale2.get_units();
   return reading;
 }
 
-};
-
-
-// void change_direction() {
-//   digitalWrite()
-// }
-
-
-void loop() {
+void run_stepper_motor() {
   digitalWrite(stepPin, HIGH);
   delayMicroseconds(2000);
   digitalWrite(stepPin, LOW);
   delayMicroseconds(2000);
 }
 
+void change_direction_stepper_motor() {
+  digitalWrite(stepPin, HIGH);
+  delayMicroseconds(2000);
+  digitalWrite(stepPin, LOW);
+  delayMicroseconds(2000);
+}
+
+};
+
+FlexClass MyFlexClass; 
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  MyFlexClass.run_stepper_motor();
+  Serial.println(MyFlexClass.read_scale1());
+  Serial.println(MyFlexClass.read_scale2());
+}
 
 // void loop() {
 
