@@ -4,89 +4,47 @@
 
 #define calibration_factor -7050.0 //This value is obtained using the SparkFun_HX711_Calibration sketch
 
+// Define Load Cell 1 & Load Cell 2 pins
 #define DOUT1 D5
 #define CLK1 D6
-HX711 scale1;
+HX711 loadcell1;
 
-// #define DOUT2 D7
-// #define CLK2 D8
-// HX711 scale2;
+#define DOUT2 D7
+#define CLK2 D8
+HX711 loadcell2;
 
-// // Define stepper motor connections and steps per revolution:
-// #define dirPin D9
-// #define stepPin D10
-// #define stepsPerRevolution 200
-
-// class FlexClass {
-// public: 
-// FlexClass() {
-//   pinMode(stepPin, OUTPUT);
-//   pinMode(dirPin, OUTPUT);
-//   pinMode(LED_BUILTIN, OUTPUT);
-
-//   scale1.begin(DOUT1, CLK1);
-//   scale1.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
-//   scale1.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
-
-//   scale2.begin(DOUT2, CLK2);
-//   scale2.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
-//   scale2.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
-// }
-
-float read_scale1() {
-  float reading = scale1.get_units();
+float read_loadcell1() {
+  float reading = loadcell1.get_units();
   return reading;
 }
-// float read_scale2() {
-//   float reading = scale2.get_units();
-//   return reading;
-// }
-
-// void run_stepper_motor() {
-//   digitalWrite(stepPin, HIGH);
-//   delayMicroseconds(2000);
-//   digitalWrite(stepPin, LOW);
-//   delayMicroseconds(2000);
-// }
-
-// void change_direction_stepper_motor() {
-//   digitalWrite(stepPin, HIGH);
-//   delayMicroseconds(2000);
-//   digitalWrite(stepPin, LOW);
-//   delayMicroseconds(2000);
-// }
-
-// };
-
-// FlexClass MyFlexClass; 
-
+float read_loadcell2() {
+  float reading = loadcell2.get_units();
+  return reading;
+}
 void setup() {
   Serial.begin(9600);
-  Serial.println("helloworld");
+  Serial.println("Hi, this is the flexibility module.");
 
-  scale1.begin(DOUT1, CLK1);
-  scale1.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
-  scale1.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
+  loadcell1.begin(DOUT1, CLK1);
+  loadcell1.set_loadcell(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
+  loadcell1.tare(); //Assuming there is no load applied on the load cell at start up, reset the load cell to 0
 
-  // scale2.begin(DOUT2, CLK2);
-  // scale2.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
-  // scale2.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
+  loadcell2.begin(DOUT2, CLK2);
+  loadcell2.set_loadcell(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
+  loadcell2.tare(); //Assuming there is no load on the load cell at start up, reset the load cell to 0
 
 }
 
 void loop() {
-  // MyFlexClass.run_stepper_motor();
-  // Serial.println(123);
+ Serial.println(loadcell1.is_ready());
+ Serial.println("Load Cell 1: ");
+ Serial.println(loadcell1.get_units(10),2); 
 
-  Serial.println(scale1.is_ready());
-  Serial.println(scale1.get_units());
+ Serial.println(loadcell2.is_ready());
+ Serial.println("Load Cell 2: ");
+ Serial.println(loadcell2.get_units(10),2);
 
-  delay(100);
-  // Serial.println(read_scale2());
+  delay(1000);
+  // Serial.println(read_loadcell1());
+  // Serial.println(read_loadcell2());
 }
-
-
-
-
-
-
